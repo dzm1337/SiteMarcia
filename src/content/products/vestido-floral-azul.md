@@ -1,6 +1,7 @@
 ---
 nome: Vestido Longo Floral Azul
 resumo: Vestido comprido de manga curta, com estampado floral e cinto a marcar a cintura.
+preco: 95
 categoria: Vestidos
 ordem: 9
 tamanhos: []

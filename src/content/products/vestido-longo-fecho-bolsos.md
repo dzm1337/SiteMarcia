@@ -1,6 +1,7 @@
 ---
 nome: Vestido Longo com Fecho e Bolsos
 resumo: Vestido comprido em malha, com decote em V, fecho dourado, bolsos laterais e fenda à frente.
+preco: 70
 categoria: Vestidos
 destaque: true
 ordem: 1

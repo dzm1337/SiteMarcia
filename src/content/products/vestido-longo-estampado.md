@@ -1,6 +1,7 @@
 ---
 nome: Vestido Longo Estampado
 resumo: Vestido comprido com estampado de traços largos, colarinho, fecho à frente e cinto na cintura.
+preco: 70
 categoria: Vestidos
 destaque: true
 ordem: 3

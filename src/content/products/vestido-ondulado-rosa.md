@@ -1,6 +1,7 @@
 ---
 nome: Vestido Longo Ondulado
 resumo: Vestido comprido de manga comprida, com estampado ondulado em tons pastel e laço no decote.
+preco: 95
 categoria: Vestidos
 ordem: 4
 tamanhos: []

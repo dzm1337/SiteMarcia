@@ -1,6 +1,7 @@
 ---
 nome: Vestido Longo com Blusa de Renda
 resumo: Vestido comprido de alças largas, usado sobre blusa branca de renda.
+preco: 95
 categoria: Vestidos
 ordem: 6
 tamanhos: []

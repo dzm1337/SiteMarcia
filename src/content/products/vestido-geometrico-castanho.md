@@ -1,6 +1,7 @@
 ---
 nome: Vestido Longo Geométrico
 resumo: Vestido comprido em tecido leve, com estampado geométrico e mangas bufantes.
+preco: 95
 categoria: Vestidos
 ordem: 8
 tamanhos: []

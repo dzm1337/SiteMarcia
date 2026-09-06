@@ -1,6 +1,7 @@
 ---
 nome: Vestido Longo Paisley
 resumo: Vestido comprido em tecido leve, com estampado paisley e renda na cintura.
+preco: 95
 categoria: Vestidos
 ordem: 12
 tamanhos: []

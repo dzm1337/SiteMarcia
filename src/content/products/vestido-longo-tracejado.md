@@ -1,6 +1,7 @@
 ---
 nome: Vestido Longo Tracejado
 resumo: Vestido comprido com padrão tracejado em tons claros, colarinho, fecho à frente e fenda.
+preco: 70
 categoria: Vestidos
 ordem: 2
 tamanhos: []

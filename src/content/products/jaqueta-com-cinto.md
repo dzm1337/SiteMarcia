@@ -1,6 +1,7 @@
 ---
 nome: Jaqueta com Cinto
 resumo: Jaqueta curta em material acetinado, com fecho à frente e cinto a marcar a cintura.
+preco: 95
 categoria: Casacos
 ordem: 7
 tamanhos: []

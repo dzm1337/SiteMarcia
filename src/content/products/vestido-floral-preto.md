@@ -1,6 +1,7 @@
 ---
 nome: Vestido Longo Floral Preto
 resumo: Vestido comprido de manga comprida, com estampado floral sobre fundo escuro.
+preco: 95
 categoria: Vestidos
 ordem: 15
 tamanhos: []

@@ -1,6 +1,7 @@
 ---
 nome: Casaco Comprido
 resumo: Casaco comprido em tecido tipo tweed, com gola de lapela e cinto.
+preco: 100
 categoria: Casacos
 ordem: 11
 tamanhos: []

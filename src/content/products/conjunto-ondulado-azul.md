@@ -1,6 +1,7 @@
 ---
 nome: Conjunto Ondulado
 resumo: Conjunto de blusa e saia comprida, com estampado ondulado em tons de azul.
+preco: 95
 categoria: Vestuário
 ordem: 10
 tamanhos: []

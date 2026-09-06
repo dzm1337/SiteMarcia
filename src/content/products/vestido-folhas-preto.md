@@ -1,6 +1,7 @@
 ---
 nome: Vestido Estampado com Cinto
 resumo: Vestido de comprimento midi, em tecido leve com estampado de folhas e cinto.
+preco: 95
 categoria: Vestidos
 ordem: 14
 tamanhos: []

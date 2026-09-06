@@ -1,6 +1,7 @@
 ---
 nome: Vestido Longo Bordado
 resumo: Vestido comprido de colarinho e manga três-quartos, com pequenos motivos bordados.
+preco: 95
 categoria: Vestidos
 ordem: 13
 tamanhos: []

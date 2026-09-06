@@ -1,0 +1,46 @@
+---
+import { site } from "@/config/site";
+import { t } from "@/lib/i18n";
+import { caminho } from "@/lib/caminho";
+import "@/styles/global.css";
+
+interface Props {
+  titulo?: string;
+  descricao?: string;
+  /** Impede indexação por motores de busca (usado em /admin e 404). */
+  naoIndexar?: boolean;
+}
+
+const { titulo, descricao = site.descricao, naoIndexar = false } = Astro.props;
+
+const tituloCompleto = titulo ? `${titulo} · ${site.nome}` : site.nome;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+---
+
+<!doctype html>
+<html lang={site.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descricao} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={caminho("/favicon.svg")} type="image/svg+xml" />
+    {naoIndexar && <meta name="robots" content="noindex, nofollow" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.nome} />
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descricao} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="pt_PT" />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+
+  <body>
+    <a class="saltar-conteudo" href="#conteudo">{t.saltarParaConteudo}</a>
+    <main id="conteudo">
+      <slot />
+    </main>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+
+# O sitemap é gerado no build (fase 5).
+# Sitemap: https://exemplo.pt/sitemap-index.xml

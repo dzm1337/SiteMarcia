@@ -1,0 +1,23 @@
+# Cabeçalhos de segurança, aplicados pelo Cloudflare Pages.
+# Testar em https://securityheaders.com depois de publicar.
+#
+# `style-src 'self'` (sem 'unsafe-inline') só é possível porque o
+# `inlineStylesheets: "never"` em astro.config.mjs obriga o Astro a pôr todo o
+# CSS em ficheiros. `script-src 'self'` só é possível porque o
+# `assetsInlineLimit: 0` obriga os scripts a saírem também em ficheiros.
+# Verificar no build: `grep -c '<style\|<script>' dist/**/*.html` tem de dar 0.
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Permissions-Policy: accelerometer=(), autoplay=(), browsing-topics=(), camera=(), display-capture=(), encrypted-media=(), geolocation=(), gyroscope=(), interest-cohort=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=(), xr-spatial-tracking=()
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'none'; img-src 'self' data:; script-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self'; manifest-src 'self'; upgrade-insecure-requests
+
+# Os ficheiros com hash no nome nunca mudam de conteúdo — podem ser
+# guardados em cache para sempre.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable

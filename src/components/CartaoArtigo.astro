@@ -1,0 +1,122 @@
+---
+import { Image } from "astro:assets";
+import { formatarPreco } from "@/lib/whatsapp";
+import { t } from "@/lib/i18n";
+import { caminho } from "@/lib/caminho";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  artigo: CollectionEntry<"products">;
+}
+
+const { artigo } = Astro.props;
+const { nome, resumo, preco, cores, esgotado } = artigo.data;
+const capa = cores[0]!;
+const nCores = cores.length;
+---
+
+<a class="cartao" href={caminho(`/artigos/${artigo.id}`)}>
+  <div class="moldura">
+    <Image
+      src={capa.fotos[0]!}
+      alt={capa.alt}
+      widths={[320, 640]}
+      sizes="(max-width: 40rem) 45vw, 320px"
+      loading="lazy"
+    />
+    {esgotado && <span class="selo">{t.esgotado}</span>}
+  </div>
+
+  <div class="info">
+    <h3>{nome}</h3>
+    <p class="resumo">{resumo}</p>
+    <p class="meta">
+      <span class="preco">{preco === undefined ? t.precoSobConsulta : formatarPreco(preco)}</span>
+      {
+        nCores > 1 && (
+          <span class="cores">
+            {nCores} {t.cores}
+          </span>
+        )
+      }
+    </p>
+  </div>
+</a>
+
+<style>
+  .cartao {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .moldura {
+    position: relative;
+    overflow: hidden;
+    background: var(--cor-fundo-alt);
+    border-radius: 2px;
+    aspect-ratio: 3 / 4;
+  }
+
+  .moldura :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    transition: transform 500ms ease;
+  }
+
+  .cartao:hover .moldura :global(img) {
+    transform: scale(1.03);
+  }
+
+  .selo {
+    position: absolute;
+    top: var(--esp-3);
+    left: var(--esp-3);
+    padding: var(--esp-1) var(--esp-3);
+    background: var(--cor-texto);
+    color: var(--cor-fundo);
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .info {
+    padding-top: var(--esp-3);
+  }
+
+  h3 {
+    margin: 0 0 var(--esp-1);
+    font-size: 1rem;
+    letter-spacing: 0;
+  }
+
+  .resumo {
+    margin: 0 0 var(--esp-2);
+    font-size: 0.875rem;
+    color: var(--cor-texto-suave);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .meta {
+    margin: 0;
+    display: flex;
+    gap: var(--esp-3);
+    align-items: baseline;
+    font-size: 0.875rem;
+  }
+
+  .preco {
+    font-weight: 600;
+  }
+
+  .cores {
+    color: var(--cor-texto-suave);
+    font-size: 0.8125rem;
+  }
+</style>

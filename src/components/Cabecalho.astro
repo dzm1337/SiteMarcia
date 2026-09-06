@@ -1,0 +1,56 @@
+---
+import { Image } from "astro:assets";
+import logo from "@/assets/logo.png";
+import { site } from "@/config/site";
+import { caminho } from "@/lib/caminho";
+---
+
+<header class="cabecalho">
+  <div class="envolvente barra">
+    <a href={caminho()} class="marca" aria-label={`${site.nome} — início`}>
+      <Image
+        src={logo}
+        alt={site.nome}
+        widths={[280, 560]}
+        sizes="(max-width: 40rem) 200px, 280px"
+      />
+    </a>
+  </div>
+</header>
+
+<style>
+  .cabecalho {
+    border-bottom: 1px solid var(--cor-linha);
+    background: var(--cor-fundo);
+  }
+
+  .barra {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-block: var(--esp-6);
+  }
+
+  .marca {
+    display: block;
+    line-height: 0;
+  }
+
+  .marca :global(img) {
+    width: 200px;
+    height: auto;
+  }
+
+  @media (min-width: 40rem) {
+    .marca :global(img) {
+      width: 280px;
+    }
+  }
+
+  /* O logótipo é preto sobre creme; no modo escuro precisa de ser aclarado. */
+  @media (prefers-color-scheme: dark) {
+    .marca :global(img) {
+      filter: invert(1) hue-rotate(180deg);
+    }
+  }
+</style>

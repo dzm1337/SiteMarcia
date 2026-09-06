@@ -1,0 +1,337 @@
+---
+import { getCollection, render } from "astro:content";
+import { Image } from "astro:assets";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Cabecalho from "@/components/Cabecalho.astro";
+import { formatarPreco, construirLinkWhatsapp } from "@/lib/whatsapp";
+import { slugDaCor } from "@/lib/cores";
+import { t } from "@/lib/i18n";
+import { caminho } from "@/lib/caminho";
+
+export async function getStaticPaths() {
+  const artigos = await getCollection("products", ({ data }) => !data.rascunho);
+  return artigos.map((artigo) => ({ params: { slug: artigo.id }, props: { artigo } }));
+}
+
+const { artigo } = Astro.props;
+const { nome, resumo, preco, tamanhos, cores, esgotado } = artigo.data;
+const { Content } = await render(artigo);
+
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const precoTexto = preco === undefined ? undefined : formatarPreco(preco);
+
+// Link de partida (primeira cor, sem tamanho). O script actualiza-o à medida
+// que o cliente escolhe — mas se o JavaScript falhar, este já funciona.
+const linkInicial = construirLinkWhatsapp({
+  produto: `${nome} — ${cores[0]!.nome}`,
+  preco: precoTexto,
+  url,
+});
+---
+
+<BaseLayout titulo={nome} descricao={resumo}>
+  <Cabecalho />
+
+  <article
+    class="envolvente artigo"
+    data-artigo
+    data-nome={nome}
+    data-url={url}
+    data-preco={precoTexto}
+  >
+    <div class="galeria">
+      {
+        cores.map((cor, i) =>
+          cor.fotos.map((foto, j) => (
+            <Image
+              src={foto}
+              alt={cor.alt}
+              widths={[480, 960]}
+              sizes="(max-width: 60rem) 100vw, 560px"
+              loading={i === 0 && j === 0 ? "eager" : "lazy"}
+              data-foto
+              data-cor={cor.nome}
+              hidden={i !== 0}
+            />
+          )),
+        )
+      }
+    </div>
+
+    <div class="detalhe">
+      <h1>{nome}</h1>
+      <p class="preco">{precoTexto ?? t.precoSobConsulta}</p>
+
+      <div class="descricao"><Content /></div>
+
+      <fieldset class="escolha">
+        <legend>{t.cor}: <span data-cor-atual>{cores[0]!.nome}</span></legend>
+        <div class="opcoes">
+          {
+            cores.map((cor, i) => {
+              const tom = slugDaCor(cor.nome);
+              return (
+                <button
+                  type="button"
+                  class="opcao"
+                  data-btn-cor={cor.nome}
+                  aria-pressed={i === 0 ? "true" : "false"}
+                  disabled={cor.esgotado}
+                >
+                  {tom && <span class="bola" data-tom={tom} aria-hidden="true" />}
+                  {cor.nome}
+                  {cor.esgotado && ` (${t.esgotado})`}
+                </button>
+              );
+            })
+          }
+        </div>
+      </fieldset>
+
+      {
+        tamanhos.length > 0 && (
+          <fieldset class="escolha">
+            <legend>{t.tamanho}</legend>
+            <div class="opcoes">
+              {tamanhos.map((tam, i) => (
+                <button
+                  type="button"
+                  class="opcao"
+                  data-btn-tamanho={tam}
+                  aria-pressed={i === 0 ? "true" : "false"}
+                >
+                  {tam}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+        )
+      }
+
+      {
+        esgotado ? (
+          <p class="esgotado-aviso">{t.esgotado}</p>
+        ) : (
+          <a class="botao-whatsapp" href={linkInicial} data-whatsapp rel="noopener">
+            {t.encomendarWhatsapp}
+          </a>
+        )
+      }
+
+      <p class="nota-encomenda">
+        Abre o WhatsApp com a mensagem já escrita. Só envia quando carregares em enviar.
+      </p>
+
+      <p class="voltar"><a href={caminho()}>← {t.verTodos}</a></p>
+    </div>
+  </article>
+</BaseLayout>
+
+<script>
+  import { construirLinkWhatsapp } from "@/lib/whatsapp";
+
+  const raiz = document.querySelector<HTMLElement>("[data-artigo]");
+  if (raiz) {
+    const nome = raiz.dataset.nome ?? "";
+    const url = raiz.dataset.url ?? "";
+    const preco = raiz.dataset.preco || undefined;
+
+    const fotos = [...raiz.querySelectorAll<HTMLElement>("[data-foto]")];
+    const botoesCor = [...raiz.querySelectorAll<HTMLButtonElement>("[data-btn-cor]")];
+    const botoesTam = [...raiz.querySelectorAll<HTMLButtonElement>("[data-btn-tamanho]")];
+    const etiquetaCor = raiz.querySelector<HTMLElement>("[data-cor-atual]");
+    const ligacao = raiz.querySelector<HTMLAnchorElement>("[data-whatsapp]");
+
+    let cor = botoesCor[0]?.dataset.btnCor ?? "";
+    let tamanho = botoesTam[0]?.dataset.btnTamanho;
+
+    function marcar(botoes: HTMLButtonElement[], activo: string | undefined, chave: string) {
+      for (const b of botoes) {
+        b.setAttribute("aria-pressed", String(b.dataset[chave] === activo));
+      }
+    }
+
+    function actualizar() {
+      // Mostra todas as fotografias da cor escolhida e esconde as outras.
+      for (const f of fotos) {
+        f.hidden = f.dataset.cor !== cor;
+      }
+      if (etiquetaCor) etiquetaCor.textContent = cor;
+      if (ligacao) {
+        ligacao.href = construirLinkWhatsapp({
+          produto: `${nome} — ${cor}`,
+          tamanho,
+          preco,
+          url,
+        });
+      }
+    }
+
+    for (const b of botoesCor) {
+      b.addEventListener("click", () => {
+        cor = b.dataset.btnCor ?? cor;
+        marcar(botoesCor, cor, "btnCor");
+        actualizar();
+      });
+    }
+
+    for (const b of botoesTam) {
+      b.addEventListener("click", () => {
+        tamanho = b.dataset.btnTamanho;
+        marcar(botoesTam, tamanho, "btnTamanho");
+        actualizar();
+      });
+    }
+
+    actualizar();
+  }
+</script>
+
+<style>
+  .artigo {
+    display: grid;
+    gap: var(--esp-8);
+    padding-block: var(--esp-8) var(--esp-16);
+  }
+
+  @media (min-width: 60rem) {
+    .artigo {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
+      gap: var(--esp-12);
+      align-items: start;
+    }
+  }
+
+  .galeria {
+    display: grid;
+    gap: var(--esp-3);
+  }
+
+  .galeria :global(img) {
+    width: 100%;
+    height: auto;
+    background: var(--cor-fundo-alt);
+    border-radius: 2px;
+  }
+
+  h1 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    margin-bottom: var(--esp-2);
+  }
+
+  .preco {
+    margin: 0 0 var(--esp-6);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--cor-destaque-escura);
+  }
+
+  .descricao {
+    color: var(--cor-texto-suave);
+    margin-bottom: var(--esp-8);
+  }
+
+  .escolha {
+    border: 0;
+    padding: 0;
+    margin: 0 0 var(--esp-6);
+  }
+
+  legend {
+    padding: 0;
+    margin-bottom: var(--esp-3);
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cor-texto-suave);
+  }
+
+  legend span {
+    color: var(--cor-texto);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .opcoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--esp-2);
+  }
+
+  .opcao {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--esp-2);
+    padding: var(--esp-2) var(--esp-4);
+    border: 1px solid var(--cor-linha);
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition:
+      border-color 150ms ease,
+      background 150ms ease;
+  }
+
+  .opcao:hover:not(:disabled) {
+    border-color: var(--cor-destaque);
+  }
+
+  .opcao[aria-pressed="true"] {
+    border-color: var(--cor-texto);
+    background: var(--cor-fundo-alt);
+    font-weight: 600;
+  }
+
+  .opcao:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    text-decoration: line-through;
+  }
+
+  .bola {
+    width: 0.875rem;
+    height: 0.875rem;
+    border-radius: 50%;
+    border: 1px solid rgb(0 0 0 / 0.2);
+  }
+
+  .botao-whatsapp {
+    display: block;
+    text-align: center;
+    padding: var(--esp-4) var(--esp-6);
+    background: var(--cor-texto);
+    color: var(--cor-fundo);
+    text-decoration: none;
+    border-radius: 2px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: background 150ms ease;
+  }
+
+  .botao-whatsapp:hover {
+    background: var(--cor-destaque-escura);
+  }
+
+  .esgotado-aviso {
+    padding: var(--esp-4);
+    text-align: center;
+    border: 1px dashed var(--cor-linha);
+    color: var(--cor-texto-suave);
+    margin: 0;
+  }
+
+  .nota-encomenda {
+    margin: var(--esp-3) 0 0;
+    font-size: 0.8125rem;
+    color: var(--cor-texto-suave);
+    text-align: center;
+  }
+
+  .voltar {
+    margin-top: var(--esp-8);
+    font-size: 0.875rem;
+  }
+</style>

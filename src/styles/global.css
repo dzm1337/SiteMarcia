@@ -1,0 +1,195 @@
+/*
+ * Base do sistema de design.
+ * As cores, tipografia e espaçamentos definitivos chegam na fase 4 —
+ * isto é apenas o mínimo para o site ser legível e acessível.
+ */
+
+:root {
+  /* Cor — extraída do logótipo SuaCara Modas */
+  --cor-fundo: #f6eddd;
+  --cor-fundo-alt: #fbf6ec;
+  --cor-texto: #1b1b1a;
+  --cor-texto-suave: #6f6353;
+  --cor-linha: #e0d3bd;
+  --cor-destaque: #9f6f41;
+  --cor-destaque-escura: #835a33;
+
+  /* Tipografia */
+  --fonte-base:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --fonte-titulo: var(--fonte-base);
+
+  /* Espaçamento — escala de 4px */
+  --esp-1: 0.25rem;
+  --esp-2: 0.5rem;
+  --esp-3: 0.75rem;
+  --esp-4: 1rem;
+  --esp-6: 1.5rem;
+  --esp-8: 2rem;
+  --esp-12: 3rem;
+  --esp-16: 4rem;
+
+  /* Layout */
+  --largura-max: 78rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cor-fundo: #151412;
+    --cor-fundo-alt: #1e1c19;
+    --cor-texto: #f4ede0;
+    --cor-texto-suave: #a89a86;
+    --cor-linha: #322d26;
+    --cor-destaque: #c89a68;
+    --cor-destaque-escura: #b8834f;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-family: var(--fonte-base);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+picture,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/*
+ * Tem de vir depois da regra acima e ser !important: `img { display: block }`
+ * sobrepõe-se ao `display: none` que o browser dá ao atributo `hidden`, e as
+ * fotografias das cores não escolhidas apareciam todas.
+ */
+[hidden] {
+  display: none !important;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--fonte-titulo);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  margin: 0 0 var(--esp-4);
+}
+
+/* Foco sempre visível — requisito de acessibilidade (WCAG 2.2 AA). */
+:focus-visible {
+  outline: 2px solid var(--cor-destaque);
+  outline-offset: 3px;
+}
+
+/* Link "saltar para o conteúdo", visível apenas com teclado. */
+.saltar-conteudo {
+  position: absolute;
+  left: var(--esp-4);
+  top: var(--esp-4);
+  padding: var(--esp-2) var(--esp-4);
+  background: var(--cor-fundo);
+  border: 1px solid var(--cor-linha);
+  border-radius: 4px;
+  transform: translateY(-200%);
+}
+
+.saltar-conteudo:focus-visible {
+  transform: translateY(0);
+}
+
+.envolvente {
+  width: 100%;
+  max-width: var(--largura-max);
+  margin-inline: auto;
+  padding-inline: var(--esp-6);
+}
+
+/*
+ * Bolinhas de cor na página do artigo.
+ * Estão aqui, e não num atributo `style`, porque a Content-Security-Policy
+ * proíbe estilos inline. Ver `src/lib/cores.ts` — a lista de nomes tem de
+ * corresponder a estas regras.
+ */
+.bola[data-tom="bordo"] {
+  background: #6d1f2c;
+}
+.bola[data-tom="chocolate"] {
+  background: #4a2f26;
+}
+.bola[data-tom="castanho"] {
+  background: #5a3a28;
+}
+.bola[data-tom="preto"] {
+  background: #1b1b1a;
+}
+.bola[data-tom="branco"] {
+  background: #f4f1ea;
+}
+.bola[data-tom="creme"] {
+  background: #efe4cf;
+}
+.bola[data-tom="bege"] {
+  background: #d8c3a2;
+}
+.bola[data-tom="verde-azeitona"] {
+  background: #4d5233;
+}
+.bola[data-tom="verde"] {
+  background: #3f5138;
+}
+.bola[data-tom="azul-marinho"] {
+  background: #22304d;
+}
+.bola[data-tom="azul"] {
+  background: #2f4a7a;
+}
+.bola[data-tom="cinzento"] {
+  background: #7c7770;
+}
+.bola[data-tom="vermelho"] {
+  background: #a02020;
+}
+.bola[data-tom="rosa"] {
+  background: #d99aa6;
+}
+.bola[data-tom="rosa-velho"] {
+  background: #c4707a;
+}
+.bola[data-tom="terracota"] {
+  background: #b5613c;
+}
+.bola[data-tom="amarelo"] {
+  background: #d8a63c;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

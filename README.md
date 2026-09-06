@@ -1,71 +1,141 @@
-# Loja de roupa
+# SuaCara Modas
 
-Site de catálogo em português. Mostra os artigos e, ao carregar em **Comprar**,
-abre o WhatsApp com a mensagem de encomenda já escrita.
+Catalogue website for a Portuguese women's clothing shop. It shows the items and,
+when a customer taps **Comprar**, opens WhatsApp with the order message already
+written — product name, colour, size and price included.
 
-Não há carrinho, não há pagamentos e não há base de dados: o site é estático,
-o que o torna rápido, barato e com muito pouca superfície de ataque.
+There is no cart, no checkout, no payments and no database. The site is fully
+static, which makes it fast, essentially free to host, and leaves very little
+for an attacker to aim at.
 
-## Como correr localmente
+The site itself is entirely in Portuguese (pt-PT). Only this README and the code
+comments are in English.
 
-Requisitos: [Node.js](https://nodejs.org) 22 ou superior.
+## Running it locally
+
+Requires [Node.js](https://nodejs.org) 22.22.3 or newer (`.nvmrc` pins 24).
 
 ```bash
-npm install      # instalar dependências (só na primeira vez)
-npm run dev      # abrir em http://localhost:4321
+npm install      # first time only
+npm run dev      # http://localhost:4321
 ```
 
-## Comandos
+## Commands
 
-| Comando                | O que faz                                             |
-| ---------------------- | ----------------------------------------------------- |
-| `npm run dev`          | Servidor local com recarregamento automático           |
-| `npm run build`        | Compila o site para a pasta `dist/`                    |
-| `npm run preview`      | Vê o resultado do build como ficará em produção        |
-| `npm run check`        | Verifica tipos e o conteúdo dos artigos                |
-| `npm run lint`         | Analisa o código à procura de erros                    |
-| `npm run format`       | Formata o código automaticamente                       |
+| Command              | What it does                                        |
+| -------------------- | --------------------------------------------------- |
+| `npm run dev`        | Local dev server with hot reload                     |
+| `npm run build`      | Builds the site into `dist/`                         |
+| `npm run preview`    | Serves the built site as it will look in production  |
+| `npm run check`      | Type-checks the code and validates every product     |
+| `npm run lint`       | Lints the code                                       |
+| `npm run format`     | Formats the code                                     |
 
-## Onde está cada coisa
+## Layout
 
 ```
 src/
-  config/site.ts        Nome da loja, número de WhatsApp, categorias
-  content.config.ts     Modelo de dados de um artigo (o que cada artigo tem)
-  content/products/     Um ficheiro Markdown por artigo
-  lib/whatsapp.ts       Constrói o link de encomenda
-  lib/i18n.ts           Todo o texto de interface, em português
-  layouts/              Estrutura comum das páginas
-  pages/                Cada ficheiro aqui é uma página do site
-  styles/global.css     Cores, tipografia e espaçamentos
+  config/site.ts        Shop name, WhatsApp number, categories
+  content.config.ts     Product schema — the shape every item must match
+  content/products/     One Markdown file per item
+  lib/whatsapp.ts       Builds the wa.me order link, formats prices in EUR
+  lib/cores.ts          Colour names that get a swatch dot
+  lib/caminho.ts        Internal links (handles a non-root base path)
+  lib/i18n.ts           Every piece of UI copy, in Portuguese
+  layouts/              Shared page shell
+  components/           Header, product card
+  pages/                One file per route
+  styles/global.css     Colours, type scale, spacing
+  assets/               Logo and product photos
 public/
-  _headers              Cabeçalhos de segurança (Cloudflare Pages)
-  robots.txt            Instruções para os motores de busca
+  _headers              Security headers (needs a host that supports them)
+  robots.txt            Search engine directives
 docs/
-  arquitetura.md        Como o site está montado e porquê
-  ameacas.md            Riscos de segurança e o que fazemos quanto a eles
-  guia-de-edicao.md     Como adicionar e editar artigos
+  arquitetura.md        How the site is put together, and why
+  ameacas.md            Threat model and mitigations
+  guia-de-edicao.md     How to add and edit items
 ```
 
-## Publicação
+## Adding or changing an item
 
-O site é publicado no **Cloudflare Pages**, que está ligado a este repositório no
-GitHub e recompila sozinho a cada `push` para o `main`.
+Each product is a Markdown file in `src/content/products/`. The schema in
+`src/content.config.ts` is enforced at build time — a malformed item fails the
+build rather than shipping a broken page.
 
-Definições do projeto no Cloudflare:
+```yaml
+---
+nome: Vestido Longo Tracejado
+resumo: Short description used in listings and meta tags.
+preco: 70
+categoria: Vestidos
+ordem: 2
+tamanhos: [] # e.g. ["S", "M", "L"]
+cores:
+  - nome: Preto
+    alt: Description of the photo, for screen readers and SEO
+    fotos:
+      - ../../assets/produtos/vestido-tracejado-preto.jpg
+---
+```
 
-| Campo                   | Valor           |
-| ----------------------- | --------------- |
-| Comando de build        | `npm run build` |
-| Pasta de saída          | `dist`          |
-| Versão do Node          | `24`            |
+Useful flags: `esgotado: true` marks an item sold out and disables its order
+button; `rascunho: true` hides it from the site without deleting the file; a
+colour can be sold out on its own with `esgotado: true` inside that colour.
 
-Os cabeçalhos de segurança vêm de `public/_headers`.
+Files can be edited straight from the GitHub web UI — no local setup needed.
 
-## Estado
+## Security
 
-Fases 1 e 2 concluídas: estrutura, build, CI, 15 artigos, encomenda por WhatsApp
-e publicação no Cloudflare Pages.
-Falta: preços e tamanhos, painel de administração, sistema de design, SEO e
-endurecimento final. Ver [docs/arquitetura.md](docs/arquitetura.md).
-# SiteMarcia
+The whole design is built around having nothing worth stealing: no accounts, no
+payments, no customer data, no server. What is left is covered by:
+
+- A strict Content-Security-Policy in `public/_headers`, with **no**
+  `'unsafe-inline'` anywhere. This only works because the build is configured to
+  emit every script and stylesheet as a file (`assetsInlineLimit: 0` and
+  `inlineStylesheets: "never"`) — changing either will silently break the page in
+  production, so don't.
+- `frame-ancestors`, `X-Frame-Options`, HSTS, `Permissions-Policy` and friends,
+  also in `_headers`. **These require a host that supports custom HTTP headers.**
+  GitHub Pages does not.
+- No remote image domains are allowed, so there is no SSRF surface.
+- CI runs formatting, lint, type checks, the build, `npm audit --audit-level=high`
+  and `gitleaks` on every push.
+
+See [docs/ameacas.md](docs/ameacas.md) for the full threat model.
+
+## Deployment
+
+**The site is not currently deployed.** The hosting choice is still open:
+
+| Option | URL | Trade-off |
+| ------ | --- | --------- |
+| Workers static assets | `<worker>.<subdomain>.workers.dev` | Cloudflare's recommended path; longer URL |
+| Cloudflare Pages | `<project>.pages.dev` | Shorter URL; Cloudflare steers new projects away from Pages |
+
+Either one serves `_headers` correctly. Build settings are the same for both:
+
+| Setting          | Value           |
+| ---------------- | --------------- |
+| Build command    | `npm run build` |
+| Output directory | `dist`          |
+| Node version     | `24`            |
+
+Set `SITE_URL` in the host's environment variables to the site's real address —
+it feeds the canonical URLs and the link inside every WhatsApp message. The
+default in `astro.config.mjs` is `https://suacaramodas.pages.dev`.
+
+## Status
+
+Done: project structure, CI, security headers, product schema with colour
+variants, 15 items with photos and prices, and the WhatsApp order flow.
+
+Outstanding:
+
+- **Sizes** — every item currently has `tamanhos: []`, so the order message
+  cannot say which size the customer wants.
+- **Deployment** — see above.
+- **Product names and descriptions** for the 12 items sourced from the supplier
+  catalogue were written from the photographs and need the owner's review.
+- Design system, SEO (sitemap, structured data), and the final hardening pass.
+
+See [docs/arquitetura.md](docs/arquitetura.md) for the full plan.

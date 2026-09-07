@@ -19,6 +19,9 @@ const TONS_CONHECIDOS = new Set([
   "bege",
   "verde-azeitona",
   "verde",
+  "verde-petroleo",
+  "verde-esmeralda",
+  "verde-alface",
   "azul-marinho",
   "azul",
   "cinzento",
@@ -26,6 +29,8 @@ const TONS_CONHECIDOS = new Set([
   "rosa",
   "rosa-velho",
   "terracota",
+  "ferrugem",
+  "laranja",
   "amarelo",
 ]);
 

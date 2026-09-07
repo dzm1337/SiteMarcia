@@ -49,6 +49,7 @@ const linkInicial = construirLinkWhatsapp({
               widths={[480, 960]}
               sizes="(max-width: 60rem) 100vw, 560px"
               loading={i === 0 && j === 0 ? "eager" : "lazy"}
+              class={j === 0 ? "principal" : undefined}
               data-foto
               data-cor={cor.nome}
               hidden={i !== 0}
@@ -202,9 +203,20 @@ const linkInicial = construirLinkWhatsapp({
     }
   }
 
+  /*
+   * As fotos de uma cor aparecem todas ao mesmo tempo: a primeira ocupa a
+   * largura toda, as restantes ficam a duas colunas. Como as cores escondidas
+   * levam `hidden` (display: none), só as da cor escolhida entram na grelha —
+   * há sempre exactamente uma `.principal` visível.
+   */
   .galeria {
     display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--esp-3);
+  }
+
+  .galeria :global(img.principal) {
+    grid-column: 1 / -1;
   }
 
   .galeria :global(img) {

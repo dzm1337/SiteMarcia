@@ -28,6 +28,13 @@ export const WHATSAPP_NUMERO = "351913290121";
  * Para adicionar uma categoria nova, acrescentar aqui e no `public/admin/config.yml`
  * (o painel de administração, criado na fase 3).
  */
-export const CATEGORIAS = ["Novidades", "Vestuário", "Casacos", "Vestidos", "Acessórios"] as const;
+export const CATEGORIAS = [
+  "Novidades",
+  "Vestuário",
+  "Conjuntos",
+  "Casacos",
+  "Vestidos",
+  "Acessórios",
+] as const;
 
 export type Categoria = (typeof CATEGORIAS)[number];

@@ -158,6 +158,15 @@ h3 {
 .bola[data-tom="verde"] {
   background: #3f5138;
 }
+.bola[data-tom="verde-petroleo"] {
+  background: #1a4a4c;
+}
+.bola[data-tom="verde-esmeralda"] {
+  background: #226b4d;
+}
+.bola[data-tom="verde-alface"] {
+  background: #92ac5e;
+}
 .bola[data-tom="azul-marinho"] {
   background: #22304d;
 }
@@ -178,6 +187,12 @@ h3 {
 }
 .bola[data-tom="terracota"] {
   background: #b5613c;
+}
+.bola[data-tom="ferrugem"] {
+  background: #a8503a;
+}
+.bola[data-tom="laranja"] {
+  background: #e0742d;
 }
 .bola[data-tom="amarelo"] {
   background: #d8a63c;
